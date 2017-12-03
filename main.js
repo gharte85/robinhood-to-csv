@@ -1,5 +1,4 @@
 const electron = require('electron');
-const {appUpdater} = require('./updater');
 const fs = require('fs');
 const url = require('url');
 const path = require('path');
@@ -76,11 +75,11 @@ app.on('ready', function () {
 
         mainWindow.webContents.send("finishedLoad", true);
 
-        const checkOS = isWindowsOrmacOS();
-        if (checkOS && !isDev) {
-          // Initate auto-updates on macOs and windows
-          appUpdater();
-        }
+        // const checkOS = isWindowsOrmacOS();
+        // if (checkOS && !isDev) {
+        //   // Initate auto-updates on macOs and windows
+        //   appUpdater();
+        // }
 
     });
 });
