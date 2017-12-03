@@ -55,32 +55,36 @@ module.exports = {
                 },
                 uri: nextUri ? nextUri : 'https://api.robinhood.com/orders/',
                 method: 'GET'
-            }, function (err, res, body) {  
+            }, function (err, res, body) {
 
-                if(err) {
-                    if(typeof body === 'string') {
+                if (err) {
+                    if (typeof body === 'string') {
                         var err = JSON.parse(err);
                         callback(err, null);
                     } else {
                         callback(err, null);
                     }
                 }
-                
-                if(typeof body === 'string') {
+
+                if (typeof body === 'string') {
                     var data = JSON.parse(body);
                 } else {
                     var data = body;
                 }
-                
+
                 nextUri = data.next;
 
                 if (data.next) {
                     var count = data.results.length;
 
                     for (var i = 0; i < data.results.length; i++) {
-                        module.exports.getInstrument(data.results[i].instrument, i, function (symbol, index) {
+                        module.exports.getInstrument(data.results[i].instrument, i, function (e, symbol, index) {
                             count--;
-                            data.results[index].symbol = symbol;
+                            
+                            if(!e && symbol) {
+                                data.results[index].symbol = symbol;
+                            }
+
                             results.push(data.results[index]);
 
                             if (count === 0) {
@@ -96,9 +100,13 @@ module.exports = {
                         var count = data.results.length;
 
                         for (var i = 0; i < data.results.length; i++) {
-                            module.exports.getInstrument(data.results[i].instrument, i, function (symbol, index) {
+                            module.exports.getInstrument(data.results[i].instrument, i, function (e, symbol, index) {
                                 count--;
-                                data.results[index].symbol = symbol;
+
+                                if(!e && symbol) {
+                                    data.results[index].symbol = symbol;
+                                }
+                                
                                 results.push(data.results[index]);
 
                                 if (count === 0) {
@@ -133,7 +141,7 @@ module.exports = {
             uri: 'https://api.robinhood.com/accounts/',
             method: 'GET'
         }, function (err, res, body) {
-            if(typeof body === 'string') {
+            if (typeof body === 'string') {
                 var data = JSON.parse(body);
             } else {
                 var data = body;
@@ -155,7 +163,7 @@ module.exports = {
                 uri: data.results[0].portfolio,
                 method: 'GET'
             }, function (e, res, b) {
-                if(typeof body === 'string') {
+                if (typeof body === 'string') {
                     var data = JSON.parse(b);
                 } else {
                     var data = b;
@@ -178,10 +186,14 @@ module.exports = {
                     callback(err, null);
                 } else {
                     var count = body.results.length;
+                    
                     for (var i = 0; i < body.results.length; i++) {
-                        module.exports.getInstrument(body.results[i].instrument, i, function (symbol, index) {
-                            body.results[index].symbol = symbol;
+                        module.exports.getInstrument(body.results[i].instrument, i, function (e, symbol, index) {
                             count--;
+
+                            if(!e && symbol) {
+                                body.results[index].symbol = symbol;
+                            }
 
                             if (count == 0) {
                                 callback(null, body.results);
@@ -196,9 +208,26 @@ module.exports = {
 
     //Get instrument symbol
     getInstrument: function (url, index, callback) {
-        request(url, function (req, res) {
-            var instrument = JSON.parse(res.body);
-            callback(instrument.symbol, index);
-        })
+        request(
+            {
+                headers: {
+                    "content-type": "application/json"
+                },
+                uri: url,
+                method: 'GET'
+            },
+            function (err, res, body) {
+                if(err) {
+                    callback(err, null, index);
+                } else {
+                    if(typeof body === 'string') {
+                        var data = JSON.parse(body);
+                        callback(null, data.symbol, index);
+                    } else {
+                        var data = body;
+                        callback(null, data.symbol, index);
+                    }
+                }
+            });
     }
 }
