@@ -1,0 +1,68 @@
+{
+  "name": "robinhood-to-csv",
+  "productName": "Robinhood to CSV",
+  "version": "1.0.0",
+  "description": "Connect to your Robinhood account and export your trading history as a csv file or upload it to your Trading Dive account",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "postinstall": "install-app-deps",
+    "package-mac": "electron-packager . --overwrite --platform=darwin --arch=x64 --icon=assets/icons/mac/icon.icns --prune=true --out=release-builds",
+    "package-win": "electron-packager . robinhood-to-csv --overwrite --asar=true --platform=win32 --arch=ia32 --icon=assets/icons/win/icon.ico --prune=true --out=release-builds --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName=\"Robinhood To CSV\"",
+    "package-linux": "electron-packager . robinhood-to-csv --overwrite --asar=true --platform=linux --arch=x64 --icon=assets/icons/png/icon.png --prune=true --out=release-builds",
+    "pack": "build --dir",
+    "dist": "build"
+  },
+  "build": {
+    "appId": "com.example.robinhood-to-csv",
+    "dmg": {
+      "contents": [
+        {
+          "x": 110,
+          "y": 150
+        },
+        {
+          "x": 240,
+          "y": 150,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ]
+    },
+    "win": {
+      "target": "squirrel",
+      "icon": "build/icon.ico"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gharte85/robinhood-to-csv.git"
+  },
+  "author": "Gareth Harte",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/gharte85/robinhood-to-csv/issues"
+  },
+  "homepage": "https://github.com/gharte85/robinhood-to-csv#readme",
+  "dependencies": {
+    "electron-log": "^2.2.11",
+    "electron-updater": "^2.16.3",
+    "http": "0.0.0",
+    "https": "^1.0.0",
+    "querystring": "^0.2.0",
+    "robinhood": "^1.1.2"
+  },
+  "devDependencies": {
+    "electron": "^1.7.9",
+    "electron-builder": "^19.47.1",
+    "electron-builder-squirrel-windows": "^19.47.0",
+    "electron-packager": "^10.1.0",
+    "electron-squirrel-startup": "^1.0.0"
+  }
+}

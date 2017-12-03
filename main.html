@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Robinhood to CSV</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ"
+        crossorigin="anonymous">
+    <link rel="stylesheet" href="assets/style.css">
+
+</head>
+
+<body>
+    <div id="logout" class="dropdown">
+        <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true"
+            aria-expanded="false">
+            <i class="fa fa-user"></i> Logout
+        </a>
+
+        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
+            <a id="rh-logout" class="dropdown-item" href="#">
+                <i class="fa fa-times danger"></i> Robinhood</a>
+            <a id="td-logout" class="dropdown-item" href="#">
+                <i class="fa fa-times danger"></i> Trading Dive</a>
+        </div>
+    </div>
+    <div id="rh-wrap">
+        <h1>
+            <i class="fa fa-table"></i> Robinhood to CSV</h1>
+        <span>The unofficial way to generate a CSV directly from your Robinhood account</span>
+
+        <!-- Authenticate with Robinhood -->
+        <form id="rh-login" action="">
+            <div class="card">
+                <div class="content">
+                    <div id="alert" class="alert alert-danger" role="alert"></div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="content">
+                                <div class="title">Enter your Robinhood credentials to make a secure connection with Robinhood for generating
+                                    your data. Your username and password will not be stored after use.</div>
+                                <div class="input-group mb-2 mr-sm-2 mb-sm-0">
+                                    <div class="input-group-addon">
+                                        <i class="fa fa-user"></i>
+                                    </div>
+                                    <input id="rh-username" type="text" class="form-control" placeholder="Username">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="content">
+                                <div class="input-group mb-2 mr-sm-2 mb-sm-0">
+                                    <div class="input-group-addon">
+                                        <i class="fa fa-key"></i>
+                                    </div>
+                                    <input id="rh-password" type="password" class="form-control" placeholder="Password">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button id="submit-button" class="btn btn-fill btn-custom" type="submit">
+                        <i class="fa fa-circle-o-notch fa-spin"></i> Login</button>
+                </div>
+            </div>
+        </form>
+
+        <!-- If logged in show CSV download and Sync -->
+        <div id="download-sync">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="title data-ready">Your CSV has been compiled and is ready for download. Simply click the button below to save it.</div>
+                    <div class="title data-not-ready">
+                        <strong>Get All</strong> will retrieve all of your trades ever made. Select
+                        <strong>Get Recent</strong> to only retrieve your most recent trades.
+                    </div>
+                    <div class="row sync">
+                        <div class="col-md-4">
+                            <button id="rh-data-all" class="btn btn-fill btn-primary">
+                                <i class="fa fa-history"></i>
+                                Get All Trades
+                            </button>
+                        </div>
+                        <div class="col-md-4">
+                            <button id="rh-data-recent" class="btn btn-fill btn-primary">
+                                <i class="fa fa-history"></i>
+                                Get Recent Trades
+                            </button>
+                        </div>
+                        <div class="col-md-4">
+                            <button id="rh-data-ready" class="btn btn-fill" disabled>
+                                <i class="fa fa-table"></i> Download CSV
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div id="or">
+                <span>or</span>
+                <hr/>
+            </div>
+
+            <form id="td-login" action="">
+                <div class="card">
+                    <img src="assets/img/trading_dive_logo.png" alt="">
+                    <div class="title">If you have a Trading Dive account you can directly sync your data by signing in.
+                        <br/> If you don't have an account you can
+                        <a style="cursor: pointer" href="javascript:void(0)" class="register">register now</a> to start using this feature.</div>
+                    <div id="td-alert" class="alert alert-danger" role="alert"></div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="content">
+                                <div class="input-group mb-2 mr-sm-2 mb-sm-0">
+                                    <div class="input-group-addon">
+                                        <i class="fa fa-user"></i>
+                                    </div>
+                                    <input id="td-username" type="text" class="form-control" placeholder="Username">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="content">
+                                <div class="input-group mb-2 mr-sm-2 mb-sm-0">
+                                    <div class="input-group-addon">
+                                        <i class="fa fa-key"></i>
+                                    </div>
+                                    <input id="td-password" type="password" class="form-control" placeholder="Password">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button id="td-submit-button" class="btn btn-fill btn-primary" type="submit">
+                        <i class="fa fa-circle-o-notch fa-spin"></i> Login</button>
+                </div>
+            </form>
+
+            <div id="td-sync">
+                <img src="assets/img/trading_dive_logo.png" alt="">
+                <div class="title">Select which portfolio you would like to sync your data to. After the sync has completed you're trades should
+                    be viewable from your account.</div>
+                <div id="portfolios" class="dropdown">
+                    <a class="btn btn-secondary dropdown-toggle" href="https://example.com" id="portfolioDropdownMenuLink" data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false">
+                        Choose a portfolio
+                    </a>
+
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuLink"></div>
+                </div>
+                <button id="sync" class="btn btn-lg btn-fill btn-primary" disabled>
+                    <div class="default">
+                        <i class="fa fa-refresh"></i> Sync with Trading Dive
+                    </div>
+                    <div class="in-progress">
+                        <i class="fa fa-refresh fa-spin"></i> Sync in progress</button>
+                </div>
+                </button>
+            </div>
+
+            <div id="progress">
+                <div class="progress">
+                    <div class="progress-bar progress-bar-striped bg-success progress-bar-animated" role="progressbar" aria-valuenow="0" aria-valuemin="0"
+                        aria-valuemax="100">
+                    </div>
+                </div>
+                <div id="progress-complete">
+                    Uploaded
+                    <strong></strong> trades
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>if (typeof module === 'object') { window.module = module; module = undefined; }</script>
+    <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb"
+        crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn"
+        crossorigin="anonymous"></script>
+
+    <script>
+        const electron = require('electron');
+        const { ipcRenderer } = require('electron');
+        const rhForm = $('#rh-login');
+        const tdForm = $('#td-login');
+
+        var dataIsReady = false;
+        var tdAuthenticated = false;
+        var selectedPortfolio = null;
+
+        // Submit login form
+        rhForm.on('submit', function (e) {
+            e.preventDefault();
+
+            // Clear errors
+            $('#alert').html('');
+            $('#alert').hide();
+            $('#submit-button i').css('display', 'inline-block');
+
+            const robinhoodUsername = $('#rh-username').val();
+            const robinhoodPassword = $('#rh-password').val();
+            ipcRenderer.send('robinhoodLogin', {
+                "username": robinhoodUsername,
+                "password": robinhoodPassword
+            });
+        });
+
+        tdForm.on('submit', function (e) {
+            e.preventDefault();
+
+            // Clear errors
+            $('#td-alert').html('');
+            $('#td-alert').hide();
+            $('#td-submit-button i').css('display', 'inline-block');
+
+            const tdUsername = $('#td-username').val();
+            const tdPassword = $('#td-password').val();
+            ipcRenderer.send('tradingDiveLogin', {
+                "username": tdUsername,
+                "password": tdPassword
+            });
+        });
+
+        // Listen for errors
+        ipcRenderer.on('error', function (e, error) {
+            $('#submit-button i').css('display', 'none');
+            $('#alert').html(error);
+            $('#alert').show();
+        });
+
+        ipcRenderer.on('tdLoginError', function (e, error) {
+            $('#td-submit-button i').css('display', 'none');
+            $('#td-alert').html(error);
+            $('#td-alert').show();
+        });
+
+        // Listen for RH authentication
+        ipcRenderer.on('authenticated', function (e, bool) {
+            $('#submit-button i').css('display', 'none');
+            $('#rh-data-loading').css('display', 'inline-block');
+            $('#alert').html('');
+            $('#alert').hide();
+            $('#rh-login').hide();
+            $('#logout').show();
+
+            // Show download CSV and Trading Dive Sync
+            $('#download-sync').show();
+        });
+
+        // Listen for TD authentication
+        ipcRenderer.on('tdAuthenticated', function (e, bool) {
+            tdAuthenticated = true;
+            $('#td-submit-button i').css('display', 'none');
+            $('#td-alert').html('');
+            $('#td-alert').hide();
+            $('#td-login').hide();
+            $('#td-logout').show();
+
+            if (dataIsReady) {
+                $('#td-sync').show();
+            }
+        });
+
+        // Listen for RH data ready
+        ipcRenderer.on('csvReady', function (e, bool) {
+            // Show download CSV button
+            $('.title.data-not-ready').hide();
+            $('#download-sync .title.data-ready').show();
+            $('#rh-data-ready').removeAttr('disabled');
+            $('#rh-data-ready').removeClass('btn-secondary');
+            $('#rh-data-ready').addClass('btn-custom');
+            $('#rh-data-loading').hide();
+            $('#or').show();
+            $('#rh-data-recent').removeAttr('disabled');
+            $('#rh-data-all').removeAttr('disabled');
+
+
+            $('#rh-data-all').html('<i class="fa fa-history"></i> Get All Trades');
+            $('#rh-data-recent').html('<i class="fa fa-history"></i> Get Recent Trades');
+
+            if (tdAuthenticated) {
+                $('#td-sync').show();
+            } else {
+                $('#td-login').show();
+            }
+
+            dataIsReady = true;
+        });
+
+        // Download CSV
+        $('#rh-data-ready').on('click', function (e) {
+            ipcRenderer.send('downloadCSV');
+        });
+
+        // Get All Trades
+        $('#rh-data-all').on('click', function (e) {
+            $('#rh-data-recent').attr('disabled', true);
+            $('#rh-data-all').attr('disabled', true);
+            $('#download-sync .title').show();
+            $('#download-sync .title.data-ready').hide();
+            $('#rh-data-ready').removeClass('btn-custom');
+            $('#rh-data-ready').attr('disabled', true);
+            $('#sync').attr('disabled', true);
+            $('#rh-data-all').html('<i class="fa fa-refresh fa-spin"></i> Loading All Trades...');
+
+            $('#td-sync').hide();
+            $('#progress').hide();
+            $('#progress .progress-bar').attr('aria-valuenow', 0);
+            $('#progress .progress-bar').attr('style', 'width:' + 0 + '%');
+            $('#progress .progress-bar').text(0 + '%');
+            $('#progress-complete strong').text('');
+            $('#portfolioDropdownMenuLink').text('Choose a portfolio');
+            $('#sync').attr('disabled', true);
+            ipcRenderer.send('getAll');
+        });
+
+        // // Get Recent Trades
+        $('#rh-data-recent').on('click', function (e) {
+            $('#rh-data-recent').attr('disabled', true);
+            $('#rh-data-all').attr('disabled', true);
+            $('#sync').attr('disabled', true);
+            $('#rh-data-recent').html('<i class="fa fa-refresh fa-spin"></i> Loading Trades...');
+            $('#rh-data-ready').removeClass('btn-custom');
+            $('#rh-data-ready').attr('disabled', true);
+
+            $('#td-sync').hide();
+            $('#progress').hide();
+            $('#progress .progress-bar').attr('aria-valuenow', 0);
+            $('#progress .progress-bar').attr('style', 'width:' + 0 + '%');
+            $('#progress .progress-bar').text(0 + '%');
+            $('#progress-complete strong').text('');
+            $('#portfolioDropdownMenuLink').text('Choose a portfolio');
+            $('#sync').attr('disabled', true);
+            ipcRenderer.send('getRecent');
+        });
+
+        // Logout of Robinhood
+        $('#rh-logout').on('click', function (e) {
+            ipcRenderer.send('rhLogout');
+
+            $('#submit-button').css('display', 'block');
+            $('#rh-data-loading').css('display', 'none');
+            $('#alert').html('');
+            $('#alert').hide();
+            $('#rh-login').show();
+            $('#logout').hide();
+            $('#download-sync').hide();
+
+            // Reset Trading Dive
+            $('#td-submit-button').css('display', 'block');
+            $('#td-alert').html('');
+            $('#td-alert').hide();
+            $('#progress').hide();
+            $('#progress .progress-bar').attr('aria-valuenow', 0);
+            $('#progress .progress-bar').attr('style', 'width:' + 0 + '%');
+            $('#progress .progress-bar').text(0 + '%');
+            $('#progress-complete strong').text('');
+            $('#portfolioDropdownMenuLink').text('Choose a portfolio');
+        });
+
+        // Sync with Trading Dive
+        $('#sync').on('click', function (e) {
+            ipcRenderer.send('tdSync', selectedPortfolio);
+            $('#progress').hide();
+            $('#progress-complete').hide();
+            $('#sync .default').hide();
+            $('#sync').attr('disabled', true);
+            $('#sync .in-progress').show();
+            $('#progress .progress-bar').show();
+        });
+
+        // Listen for sync finish
+        ipcRenderer.on('syncFinish', function (e, status) {
+            var percentComplete = 0;
+            var loaded = status.loaded;
+            var currentTradeCount = status.totalTrades - loaded;
+            var totalTrades = status.totalTrades;
+            var avgExecTimePerTrade = status.avgExecTimePerTrade;
+            var importedStartedTimestamp = status.importedStartedTimestamp;
+            var estimatedCompletionTimestamp = status.estimatedCompletionTimestamp;
+
+            if (loaded === totalTrades) {
+                $('#progress').show();
+                $('#progress .progress-bar').attr('aria-valuenow', 100);
+                $('#progress .progress-bar').attr('style', 'width: 100%');
+                $('#progress .progress-bar').text('100%');
+
+                $('#sync .default').show();
+                $('#sync .in-progress').hide();
+                $('#progress-complete strong').text(totalTrades);
+                $('#progress-complete').show();
+                $('#sync').removeAttr('disabled');
+            } else {
+                var x = setInterval(() => {
+                    currentTradeCount--;
+                    loaded++;
+
+                    percentComplete = parseInt(((loaded / totalTrades) * 100).toFixed(2));
+
+                    $('#progress').show();
+                    $('#progress .progress-bar').attr('aria-valuenow', percentComplete);
+                    $('#progress .progress-bar').attr('style', 'width:' + percentComplete + '%');
+                    $('#progress .progress-bar').text(percentComplete + '%');
+
+                    if (currentTradeCount === 0) {
+                        clearInterval(x);
+                        $('#sync .default').show();
+                        $('#sync .in-progress').hide();
+                        $('#progress-complete strong').text(totalTrades);
+                        $('#progress-complete').show();
+                        $('#sync').removeAttr('disabled');
+                    }
+                }, avgExecTimePerTrade);
+            }
+
+        });
+
+        // Get user's portfolios so they can be selected for importing
+        ipcRenderer.on('tdPortfolios', function (e, portfolios) {
+            var html = '';
+
+            for (var i = 0; i < portfolios.length; i++) {
+                if (portfolios[i].name && portfolios[i]._id) {
+                    html += '<a class="dropdown-item" href="#" data-name="' + portfolios[i].name + '" data-id="' + portfolios[i]._id + '">' + portfolios[i].name + '</a>';
+                }
+            }
+
+            $('#portfolios div.dropdown-menu').html(html);
+
+            // Listen for portfolio select
+            $('#portfolios .dropdown-item').on('click', function () {
+                selectedPortfolio = {
+                    "_id": $(this).data("id"),
+                    "name": $(this).data("name")
+                }
+                $('#sync').addClass('enabled');
+                $('#sync').removeAttr('disabled');
+                $('#portfolioDropdownMenuLink').text($(this).text());
+
+                $('#sync .default').show();
+                $('#sync .in-progress').hide();
+                $('#progress-complete strong').text('');
+                $('#progress').hide();
+                $('#progress-complete').hide();
+            });
+        });
+
+        // Logout of Trading Dive
+        $('#td-logout').on('click', function (e) {
+            ipcRenderer.send('tdLogout');
+            tdAuthenticated = false;
+            $('#td-submit-button').css('display', 'block');
+            $('#td-alert').html('');
+            $('#td-alert').hide();
+            $('#td-login').show();
+            $('#td-logout').hide();
+            $('#td-sync').hide();
+            $('#progress').hide();
+            $('#progress .progress-bar').attr('aria-valuenow', 0);
+            $('#progress .progress-bar').attr('style', 'width:' + 0 + '%');
+            $('#progress .progress-bar').text(0 + '%');
+            $('#progress-complete strong').text('');
+            $('#portfolioDropdownMenuLink').text('Choose a portfolio');
+            $('#sync').attr('disabled', true);
+        });
+
+        $('.register').on('click', function () {
+            ipcRenderer.send('openRegisterPage');
+        });
+
+        // Initial load finished, show forms and content
+        ipcRenderer.on('finishedLoad', function (e, bool) {
+            $('body').show();
+        });
+    </script>
+</body>
+
+</html>

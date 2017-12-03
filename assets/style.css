@@ -1,0 +1,216 @@
+:not(input):not(textarea),
+:not(input):not(textarea)::after,
+:not(input):not(textarea)::before {
+    -webkit-user-select: none;
+    user-select: none;
+    cursor: default;
+}
+
+body {
+    display: none;
+    background-color: #edf3fb;
+}
+
+.danger {
+    color: #fb404b;
+}
+
+#logout {
+    display: none;
+    position: absolute;
+    right: 20px;
+    top: 20px;
+}
+
+#logout a {
+    cursor: pointer;
+    display: block !important;
+}
+
+#logout i {
+    margin-right: 8px;
+}
+
+#td-logout {
+    display: none;
+}
+
+#alert, #td-alert {
+    display: none;
+}
+
+.fa-circle-o-notch {
+    display: none;
+}
+
+.btn-custom {
+    background-color: #21ce99 !important;
+    border-color: #21ce99 !important;
+    outline: none !important;
+    color: white;
+}
+
+.btn-custom:focus, .btn-custom:active, {
+    background-color: #1fbf8e;
+    box-shadow: 0 0 0 2px rgba(31,191,142,.5);
+}
+
+form #submit-button, form #td-submit-button {
+    float: right;
+    cursor: pointer;
+    display: block;
+    width: 100%;
+}
+
+input, button, textarea, :focus {
+    outline: none;
+}
+
+.row {
+    margin-bottom: 24px;
+}
+
+#rh-wrap {
+    width: 60%;
+    margin: 0 auto;
+    padding-top: 60px;
+    text-align: center;
+}
+
+#rh-wrap h1 {
+    color:#21ce99;
+    display: block;
+    width: 100%;
+    text-align: center;
+}
+
+#rh-wrap span {
+    font-size: 12px;
+    display: block;
+    width: 100%;
+    text-align: center;
+}
+
+#rh-login {
+    margin-top: 60px;
+}
+
+#rh-login .title {
+    font-size: 12px;
+    color: #6a737d;
+    margin-bottom: 24px;
+}
+
+#rh-data-ready, #rh-data-all, #rh-data-recent {
+    width: 100%;
+    cursor: pointer;
+}
+
+#download-sync {
+    width: 100%;
+    display: none;
+    margin-top: 60px;
+}
+
+#download-sync .title.data-ready {
+    display: none;
+}
+
+#download-sync .title {
+    text-align: center;
+}
+
+#download-sync .sync button {
+    width: 100%;
+    font-size: 14px;
+}
+
+#td-login {
+    display: none;
+}
+
+#td-login .card, #rh-login .card {
+    padding: 20px;
+}
+
+#td-login .title {
+    color: #6a737d;
+    font-size: 12px;
+    margin-bottom: 20px;
+}
+
+#td-login img, #td-sync img {
+    width: 200px;
+    margin: 0 auto;
+    margin-bottom: 20px;
+    display: block;
+}
+
+#td-sync {
+    display: none;
+}
+
+#td-sync button.enabled {
+    cursor: pointer;
+}
+
+#td-sync .dropdown a, 
+#td-sync .dropdown .dropdown-menu,
+#td-sync button {
+    width: 100%;
+}
+
+#sync, #sync div {
+    cursor: pointer;
+}
+
+#sync .in-progress {
+    display: none;
+}
+
+#portfolios {
+    margin-bottom: 24px;
+}
+
+#portfolios a {
+    cursor: pointer;
+}
+
+#or {
+    display: none;
+    position: relative;
+    margin: 26px 0 50px 0;
+}
+
+#or span {
+    display: block;
+    margin: 0 auto;
+    width: 35px;
+    height: 35px;
+    font-weight: 600;
+    font-size: 16px;
+    position: relative;
+    background: #edf3fb;
+    position: absolute;
+    left: calc(50% - 17px);
+    top: -13px;
+}
+
+#progress {
+    margin-top: 12px;
+    display: none;
+}
+
+#progress .progress-bar {
+}
+
+#progress-complete {
+    display: none;
+    margin-top: 12px;
+}
+
+.title {
+    color: #6a737d;
+    font-size: 12px;
+    margin-bottom: 24px;
+}
