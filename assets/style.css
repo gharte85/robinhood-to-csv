@@ -184,6 +184,7 @@ input, button, textarea, :focus {
 }
 
 #or span {
+    color: #333;
     display: block;
     margin: 0 auto;
     width: 35px;
