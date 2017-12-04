@@ -189,6 +189,7 @@ module.exports = {
 
     // Get only recent trades
     getRecentOrders(mainWindow, callback) {
+        var tradeCount = 1;
         var Robinhood = require('robinhood')({ "token": _token }, function () {
             // Grab trades
             Robinhood.orders(function (err, response, body) {
@@ -196,7 +197,7 @@ module.exports = {
                     callback(err, null);
                 } else {
                     var count = body.results.length;
-                    var tradeCount = 0;
+                    
                     
                     for (var i = 0; i < body.results.length; i++) {
                         module.exports.getInstrument(body.results[i].instrument, i, function (e, symbol, index) {
@@ -211,7 +212,6 @@ module.exports = {
                             }
 
                             if (count == 0) {
-                                mainWindow.webContents.send("tradesLog", body.results.length);
                                 callback(null, body.results);
                             }
                         });
