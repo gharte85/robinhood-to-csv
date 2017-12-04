@@ -72,27 +72,30 @@
                 <div class="col-md-12">
                     <div class="title data-ready">Your CSV has been compiled and is ready for download. Simply click the button below to save it.</div>
                     <div class="title data-not-ready">
-                        <strong>Get All</strong> will retrieve all of your trades ever made. Select
-                        <strong>Get Recent</strong> to only retrieve your most recent trades.
+                        <strong>Download All</strong> will retrieve all of your trades ever made. <strong>Download Recent</strong> will only retrieve your most recent trades. After making a selection a request will be sent to Robinhood to grab these trades. After it completes and compiles, you will then be able to select the <strong>Export to CSV</strong> button to save locally.
                     </div>
                     <div class="row sync">
                         <div class="col-md-4">
                             <button id="rh-data-all" class="btn btn-fill btn-primary">
                                 <i class="fa fa-history"></i>
-                                Get All Trades
+                                Download All
                             </button>
                         </div>
                         <div class="col-md-4">
                             <button id="rh-data-recent" class="btn btn-fill btn-primary">
                                 <i class="fa fa-history"></i>
-                                Get Recent Trades
+                                Download Recent
                             </button>
                         </div>
                         <div class="col-md-4">
                             <button id="rh-data-ready" class="btn btn-fill" disabled>
-                                <i class="fa fa-table"></i> Download CSV
+                                <i class="fa fa-table"></i> Export CSV
                             </button>
                         </div>
+                    </div>
+                    <div class="row" id="logs">
+                        <div class="in-progress"><strong>Status:</strong> downloaded <strong class="trades">0</strong> trades from Robinhood...</div>
+                        <div class="complete"><strong>Status:</strong> Complete! <strong class="trades">0</strong> trades are ready to download or sync.</div>
                     </div>
                 </div>
             </div>
@@ -106,7 +109,8 @@
             <form id="td-login" action="">
                 <div class="card">
                     <img src="assets/img/trading_dive_logo.png" alt="">
-                    <div class="title">If you have a Trading Dive account you can directly sync your data by signing in.
+                    <div class="title">
+                        If you have a Trading Dive account you can directly sync your data by signing in.
                         <br/> If you don't have an account you can
                         <a style="cursor: pointer" href="javascript:void(0)" class="register">register now</a> to start using this feature.</div>
                     <div id="td-alert" class="alert alert-danger" role="alert"></div>
@@ -142,8 +146,7 @@
 
             <div id="td-sync">
                 <img src="assets/img/trading_dive_logo.png" alt="">
-                <div class="title">Select which portfolio you would like to sync your data to. After the sync has completed you're trades should
-                    be viewable from your account.</div>
+                <div class="title">To sync your data, select your preferred portfolio. Once the sync has completed, <br/>your Robinhood trades will be visible in your Trading Dive account.</div>
                 <div id="portfolios" class="dropdown">
                     <a class="btn btn-secondary dropdown-toggle" href="https://example.com" id="portfolioDropdownMenuLink" data-toggle="dropdown"
                         aria-haspopup="true" aria-expanded="false">
@@ -169,8 +172,7 @@
                     </div>
                 </div>
                 <div id="progress-complete">
-                    Uploaded
-                    <strong></strong> trades
+                    <strong>Complete</strong>: A total of <strong class="trades"></strong> trades were uploaded to your account. <a href="javascript:void(0)" class="view-trades">View trades</a>
                 </div>
             </div>
         </div>
@@ -189,6 +191,7 @@
         const rhForm = $('#rh-login');
         const tdForm = $('#td-login');
 
+        var totalTrades = 0;
         var dataIsReady = false;
         var tdAuthenticated = false;
         var selectedPortfolio = null;
@@ -282,6 +285,10 @@
 
             $('#rh-data-all').html('<i class="fa fa-history"></i> Get All Trades');
             $('#rh-data-recent').html('<i class="fa fa-history"></i> Get Recent Trades');
+            $('#logs div.in-progress').hide();
+            $('#logs div.in-progress .trades').text('0');
+            $('#logs div.complete .trades').text(totalTrades);
+            $('#logs div.complete').show();
 
             if (tdAuthenticated) {
                 $('#td-sync').show();
@@ -313,9 +320,13 @@
             $('#progress .progress-bar').attr('aria-valuenow', 0);
             $('#progress .progress-bar').attr('style', 'width:' + 0 + '%');
             $('#progress .progress-bar').text(0 + '%');
-            $('#progress-complete strong').text('');
+            $('#progress-complete strong.trades').text('');
             $('#portfolioDropdownMenuLink').text('Choose a portfolio');
             $('#sync').attr('disabled', true);
+
+            $('#logs div.in-progress').show();
+            $('#logs div.complete').hide();
+            $('#logs div.complete .trades').text('0');
             ipcRenderer.send('getAll');
         });
 
@@ -333,9 +344,11 @@
             $('#progress .progress-bar').attr('aria-valuenow', 0);
             $('#progress .progress-bar').attr('style', 'width:' + 0 + '%');
             $('#progress .progress-bar').text(0 + '%');
-            $('#progress-complete strong').text('');
+            $('#progress-complete strong.trades').text('');
             $('#portfolioDropdownMenuLink').text('Choose a portfolio');
             $('#sync').attr('disabled', true);
+            $('#logs div.in-progress').show();
+            $('#logs div.complete').hide();
             ipcRenderer.send('getRecent');
         });
 
@@ -359,7 +372,7 @@
             $('#progress .progress-bar').attr('aria-valuenow', 0);
             $('#progress .progress-bar').attr('style', 'width:' + 0 + '%');
             $('#progress .progress-bar').text(0 + '%');
-            $('#progress-complete strong').text('');
+            $('#progress-complete strong.trades').text('');
             $('#portfolioDropdownMenuLink').text('Choose a portfolio');
         });
 
@@ -370,6 +383,7 @@
             $('#progress-complete').hide();
             $('#sync .default').hide();
             $('#sync').attr('disabled', true);
+            $('#progress .progress').show();
             $('#sync .in-progress').show();
             $('#progress .progress-bar').show();
         });
@@ -392,7 +406,7 @@
 
                 $('#sync .default').show();
                 $('#sync .in-progress').hide();
-                $('#progress-complete strong').text(totalTrades);
+                $('#progress-complete .trades').text(totalTrades);
                 $('#progress-complete').show();
                 $('#sync').removeAttr('disabled');
             } else {
@@ -409,9 +423,11 @@
 
                     if (currentTradeCount === 0) {
                         clearInterval(x);
+                        $('#progress .progress').hide();
+                        $('#sync .progres').hide();
                         $('#sync .default').show();
                         $('#sync .in-progress').hide();
-                        $('#progress-complete strong').text(totalTrades);
+                        $('#progress-complete .trades').text(totalTrades);
                         $('#progress-complete').show();
                         $('#sync').removeAttr('disabled');
                     }
@@ -444,7 +460,7 @@
 
                 $('#sync .default').show();
                 $('#sync .in-progress').hide();
-                $('#progress-complete strong').text('');
+                $('#progress-complete strong.trades').text('');
                 $('#progress').hide();
                 $('#progress-complete').hide();
             });
@@ -464,7 +480,7 @@
             $('#progress .progress-bar').attr('aria-valuenow', 0);
             $('#progress .progress-bar').attr('style', 'width:' + 0 + '%');
             $('#progress .progress-bar').text(0 + '%');
-            $('#progress-complete strong').text('');
+            $('#progress-complete strong.trades').text('');
             $('#portfolioDropdownMenuLink').text('Choose a portfolio');
             $('#sync').attr('disabled', true);
         });
@@ -473,9 +489,18 @@
             ipcRenderer.send('openRegisterPage');
         });
 
+        $('.view-trades').on('click', function () {
+            ipcRenderer.send('loadDashboardPage');
+        });
+
         // Initial load finished, show forms and content
         ipcRenderer.on('finishedLoad', function (e, bool) {
             $('body').show();
+        });
+
+        ipcRenderer.on('tradesLog', function (e, count) {
+            totalTrades = count;
+            $('#logs div.in-progress .trades').text(count);
         });
     </script>
 </body>

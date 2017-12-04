@@ -40,7 +40,6 @@ var currentBalance = null;
 
 // Listen for app to be ready
 app.on('ready', function () {
-
     // Create new window
     mainWindow = new BrowserWindow({ width: 1024, height: 750, resizable: false});
 
@@ -109,7 +108,7 @@ ipcMain.on('robinhoodLogin', function (e, login) {
 });
 
 ipcMain.on('tradingDiveLogin', function (e, login) {
-
+    
     // Authenticate with Trading Dive
     td.authenticate(login.username, login.password, function (err, token) {
         if (err) {
@@ -155,11 +154,11 @@ ipcMain.on('tdSync', function (e, portfolio) {
                 portfolio.currentValue = parseFloat(balance);
 
                 td.updatePortfolioBalance(store.get('tdToken'), portfolio, function () {
-                    mainWindow.webContents.send("syncFinish", status);
+                    
                 });
             });
 
-            
+            mainWindow.webContents.send("syncFinish", status);
         });
 });
 
@@ -180,7 +179,7 @@ function _populateCSVData(filter) {
             mainWindow.webContents.send("csvReady", true);
         });
     } else {
-        robinhood.getRecentOrders(function (err, data) {
+        robinhood.getRecentOrders(mainWindow, function (err, data) {
             _generateCSV(data);
             // Let main window know when file is finished generating
             mainWindow.webContents.send("csvReady", true);
@@ -190,6 +189,10 @@ function _populateCSVData(filter) {
 
 ipcMain.on('openRegisterPage', function () {
     shell.openExternal('https://app.tradingdive.com/users/register');
+});
+
+ipcMain.on('loadDashboardPage', function () {
+    shell.openExternal('https://app.tradingdive.com/dashboard/#/trades');
 });
 
 function _saveFile() {
@@ -224,11 +227,12 @@ function _saveFile() {
 function _generateCSV(data) {
     // Create CSV headers
     var csvContent = 'created,symbol,side,quantity,price,fees \r\n';
-
     // Loop through trades and create csv structure
+    var count = 0;
     for (var i = 0; i < data.length; i++) {
-
-        if (data[i].cumulative_quantity > 0)
+        
+        if (data[i].cumulative_quantity > 0) {
+            count++
             csvContent += data[i].created_at + ','
                 + data[i].symbol + ','
                 + data[i].side + ','
@@ -236,6 +240,8 @@ function _generateCSV(data) {
                 + data[i].average_price + ','
                 + data[i].fees
                 + '\r\n';
+        }
     }
+
     _csvContent = csvContent;
 }

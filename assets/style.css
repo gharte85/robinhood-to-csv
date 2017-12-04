@@ -73,7 +73,7 @@ input, button, textarea, :focus {
 #rh-wrap {
     width: 60%;
     margin: 0 auto;
-    padding-top: 60px;
+    padding-top: 40px;
     text-align: center;
 }
 
@@ -89,10 +89,11 @@ input, button, textarea, :focus {
     display: block;
     width: 100%;
     text-align: center;
+    color:#21ce99;
 }
 
 #rh-login {
-    margin-top: 60px;
+    margin-top: 40px;
 }
 
 #rh-login .title {
@@ -109,7 +110,7 @@ input, button, textarea, :focus {
 #download-sync {
     width: 100%;
     display: none;
-    margin-top: 60px;
+    margin-top: 40px;
 }
 
 #download-sync .title.data-ready {
@@ -213,4 +214,18 @@ input, button, textarea, :focus {
     color: #6a737d;
     font-size: 12px;
     margin-bottom: 24px;
+}
+
+#logs {
+    text-align: center;
+    display: block;
+    width: 100%;
+}
+
+#logs div.in-progress, #logs div.complete {
+    display: none;
+}
+
+.view-trades {
+    cursor: pointer;
 }

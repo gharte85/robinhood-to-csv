@@ -3,6 +3,7 @@ const https = require('https');
 const request = require('request');
 const path = require('path');
 var querystring = require('querystring');
+var moment = require('moment');
 
 // For local development getting around certificates
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
@@ -54,12 +55,13 @@ module.exports = {
     },
     // Sync portfolio's balance with Robinhood
     updatePortfolioBalance: function (token, portfolio, callback) {
-        var data = { 
-            "portfolio": portfolio,
-            "broker": "robinhood"
-        };
 
         function update() {
+            var data = { 
+                "portfolio": portfolio,
+                "broker": "robinhood"
+            };
+
             request({
                 headers: {
                     "content-type": "application/json",
@@ -69,18 +71,24 @@ module.exports = {
                 json: data,
                 method: 'POST'
             }, function (err, res, body) {
-                if(body.importStatus.inProgress) {
-                    update();
-                } else {
-                    if (err) {
-                        callback(err, null);
-                    } else {                
-                        if (body.status === 401) {
-                            callback(body.message, null);
-                        } else {
-                            callback(err, body);
+                if(body && body.importStatus) {
+                    if(body.importStatus.inProgress) {
+                        setTimeout(function(){
+                            update();
+                        }, 10000);
+                    } else {
+                        if (err) {
+                            callback(err, null);
+                        } else {                
+                            if (body.status === 401) {
+                                callback(body.message, null);
+                            } else {
+                                callback(err, body);
+                            }
                         }
                     }
+                } else {
+                    callback('Error: unable to get import status', null);
                 }
             });
         }

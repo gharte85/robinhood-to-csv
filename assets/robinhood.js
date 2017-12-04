@@ -85,7 +85,11 @@ module.exports = {
                                 data.results[index].symbol = symbol;
                             }
 
-                            results.push(data.results[index]);
+                            if(data.results[index].cumulative_quantity > 0) {
+                                results.push(data.results[index]);
+
+                                mainWindow.webContents.send("tradesLog", results.length);
+                            }
 
                             if (count === 0) {
                                 next();
@@ -95,6 +99,8 @@ module.exports = {
                 } else {
                     if (results > 0) {
                         data.results = results;
+                        mainWindow.webContents.send("tradesLog", data.results.length);
+
                         callback(null, data.results);
                     } else {
                         var count = data.results.length;
@@ -106,10 +112,13 @@ module.exports = {
                                 if(!e && symbol) {
                                     data.results[index].symbol = symbol;
                                 }
-                                
-                                results.push(data.results[index]);
 
-                                if (count === 0) {
+                                if(data.results[index].cumulative_quantity > 0) {
+                                    results.push(data.results[index]);                                  
+                                    mainWindow.webContents.send("tradesLog", results.length);
+                                }
+                                
+                                if (count === 0) {                              
                                     callback(null, results);
                                 }
                             });
@@ -168,6 +177,7 @@ module.exports = {
                 } else {
                     var data = b;
                 }
+
                 if (e) {
                     callback(e, null);
                 } else {
@@ -178,7 +188,7 @@ module.exports = {
     },
 
     // Get only recent trades
-    getRecentOrders(callback) {
+    getRecentOrders(mainWindow, callback) {
         var Robinhood = require('robinhood')({ "token": _token }, function () {
             // Grab trades
             Robinhood.orders(function (err, response, body) {
@@ -186,6 +196,7 @@ module.exports = {
                     callback(err, null);
                 } else {
                     var count = body.results.length;
+                    var tradeCount = 0;
                     
                     for (var i = 0; i < body.results.length; i++) {
                         module.exports.getInstrument(body.results[i].instrument, i, function (e, symbol, index) {
@@ -195,7 +206,12 @@ module.exports = {
                                 body.results[index].symbol = symbol;
                             }
 
+                            if(body.results[index].cumulative_quantity > 0) {
+                                mainWindow.webContents.send("tradesLog", tradeCount++);
+                            }
+
                             if (count == 0) {
+                                mainWindow.webContents.send("tradesLog", body.results.length);
                                 callback(null, body.results);
                             }
                         });
